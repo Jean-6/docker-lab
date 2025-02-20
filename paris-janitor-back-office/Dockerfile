@@ -1,21 +1,41 @@
 # Step 1
-#Use official node image as base image
-FROM node:20-alpine AS build
-#Config main workspace
-WORKDIR /usr/app
-#Copy
-COPY . /usr/app/
-#Install global command (Angular CLI) into container
-RUN npm install -g @angular/cli
-#Install dependencies (to install package.json dependencies)
+# Use official node image as base image
+FROM node:14 AS build
+
+# Config main workspace
+WORKDIR /app
+
+# Copy
+COPY package*.json ./
+
+# Install app dependencies into container
 RUN npm install
-#let build angular app
-RUN ng build --configuration production
 
-#Step 2
+# Copy others app files
+COPY . .
 
-FROM nginx:latest
-COPY --from=build /usr/app/dist/paris-janitor-back-office /usr/share/nginx/html/
+# Let build angular app
+RUN npm run build --prod
+
+# Step 2
+
+# Use NGINX image to serve app
+FROM nginx:alpine
+
+# Copy build files of angular app to Nginx directory
+COPY --from=build /app/dist/paris-janitor-back-office /usr/share/nginx/html
+
+# Expose port on which nginx execute
 EXPOSE 80
-# command to launch Nginx
+
+# Launch Nginx
+CMD ["nginx", "-g", "daemon off;"]
+
+# Copy
+COPY --from=build /usr/app/dist/paris-janitor-back-office /usr/share/nginx/html/
+
+# Expose port 80
+EXPOSE 80
+
+# Command to launch Nginx
 CMD ["nginx","-g","daemon off;"]
