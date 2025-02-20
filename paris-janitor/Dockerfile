@@ -9,7 +9,7 @@ WORKDIR /app
 # Copy generated JAR file by Maven
 COPY target/*.jar app.jar
 
-# Expose the port of the Spring Boot application (default 8080)
+# Expose the port of the Spring Boot application (default 8081)
 EXPOSE 8081
 
 # Launch app
