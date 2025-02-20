@@ -1,5 +1,16 @@
-FROM openjdk:11
+# Step 1
+
+# Use Java image
+FROM openjdk:17-jdk-slim
+
+# Define workspace into container
 WORKDIR /app
-COPY target/paris-janitor-api-0.0.1-SNAPSHOT.jar /app
-EXPOSE 8080
-CMD ["java","-jar","paris-janitor-api-0.0.1-SNAPSHOT.jar"]
+
+# Copy generated JAR file by Maven
+COPY target/*.jar app.jar
+
+# Expose the port of the Spring Boot application (default 8080)
+EXPOSE 8081
+
+# Launch app
+CMD ["java","-jar","app.jar"]
