@@ -1,0 +1,44 @@
+# docker-compose
+
+services:
+  db:
+    image: mysql
+    container_name: mysql-compose
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_DATABASE=pj-user-db
+      - MYSQL_ROOT_PASSWORD:root
+
+  rabbit:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-compose
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  app:
+    image: paris-janitor-ms-user
+    container_name: paris-janitor-ms-user
+    restart: always
+    ports:
+      - "9091:9090"
+    depends_on:
+      - db
+      - rabbit
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/pj-user-db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_RABBITMQ_HOST: rabbit
+
+volumes:
+  mysql_data:
+
